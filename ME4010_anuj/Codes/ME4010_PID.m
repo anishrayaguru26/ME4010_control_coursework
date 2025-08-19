@@ -1,0 +1,13 @@
+clc; clear;
+syms s;
+Zeros = [];
+Poles = [0 -1.75 -6];
+os = 0.2; tp = 1.8;
+zeta = (-log(os)/(sqrt(pi^2 + (log(os))^2)));
+w_d = pi/tp; w_n = w_d/sqrt(1 - zeta^2);
+G_n_1 = sym2poly((s + 0.5)*(s + 10));
+G_d = sym2poly(s*(s+1.75)*(s+6)); G_d_1 = sym2poly(s*s*(s+1.75)*(s+6));
+G = tf(1, G_d);
+G_1 = tf(G_n_1, G_d_1);
+%figure; rlocus(G);
+figure; rlocus(G_1);

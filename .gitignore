@@ -1,0 +1,40 @@
+# MATLAB
+*.asv
+*.m~
+*.mat
+slprj/
+*.slxc
+*.autosave
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Simulink cache files
+*.slxc
+
+# Matlab compiled files
+*.mex*
+*.p
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+*.log
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Backup files
+*~
+*.bak

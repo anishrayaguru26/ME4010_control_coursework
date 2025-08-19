@@ -1,0 +1,20 @@
+clc; close all;
+
+%syms s;
+%system = 1/(s*(s+1)*(s+2));
+%sysor = tf([1],[1 3 2 0]);
+%figure(1)
+%hold on;
+%rlocus(sysor);
+%for k = 0.01:0.01:10
+%den = [1 3 2 k];
+%systf = tf([1],den);
+%P = complex(roots(den));
+%grid on;
+%plot(P,'o');
+%pause(0.1);
+%end
+figure(1);
+hold on;
+for sigma = (-4):0.1:(-3)
+    plot(sigma,(sigma*2 + 7*sigma));
