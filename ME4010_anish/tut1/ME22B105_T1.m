@@ -16,6 +16,8 @@ poles = r(:,1);
 figure(2);
 plot(poles, 'o', 'MarkerFaceColor', 'white', 'MarkerSize', 10);
 grid on;
+axis on
+
 
 %identifying the stability of the system - exercise 2 part 2
 stable = 0;
