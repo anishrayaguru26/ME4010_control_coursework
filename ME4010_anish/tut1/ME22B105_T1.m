@@ -4,7 +4,7 @@
 clc;clear;close all;
 
 %defining the transfer function
-g1 = tf(1, [1 2 7 10 7 1]);
+g1 = tf(1, [1 2 7 10 7 100]);
 
 %to create rootlocus plot - exercise 1 part 2
 figure(1);
