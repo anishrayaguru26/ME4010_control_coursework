@@ -1,3 +1,2 @@
-clc; clear; close all;
-g = tf(1,[1 2 3]);
+g = tf(10,[1 2*sqrt(10) 10]);
 step(g);
