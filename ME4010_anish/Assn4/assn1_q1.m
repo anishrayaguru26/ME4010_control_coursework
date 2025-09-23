@@ -34,15 +34,34 @@ wd = wn*sqrt(1-zeta^2);
 point_to_pass_through = -zeta*wn + 1i*wd; % casecade comp rl must pass through this point
 %add a zero on the real axis to move the root locus through this point
 
-comp_zero = 4.5; %default value 4.5
-cascade_comp = zpk(comp_zero,... %{Find a way to pass through the point%}
-    [], 1);
+for comp_pole = -10:0.01:0
+    comp_zero = -4.5; % keep the zero to the right of the pole by 4.5 units
+    cascade_comp = zpk(comp_zero, comp_pole, 1);
+    G_c = series(G, cascade_comp);
+    if point_on_rl(point_to_pass_through, G_c)
+        fprintf("The compensator pole is at: %.2f\n", comp_pole);
+        final_comp_pole = comp_pole;
+        break;
+    end
+end
+
+%comp_zero = 4.5; %default value 4.5
+cascade_comp = zpk(comp_zero, final_comp_pole, 1);
 G_c = series(G, cascade_comp);
 
 figure(1);
-step(G);
-figure(2);
-step(G_c);
+step(G); hold on
+step(G_c); hold off
+figure(3);
+rlocus(G_c); hold on
+plot([0, r*cosd(ang)], [0, r*sind(ang)], '--'); 
+plot (real(point_to_pass_through), imag(point_to_pass_through), 'ro'); hold off
+title('Root Locus with Compensator');
+figure(4);
+rlocus(G); hold on
+plot([0, r*cosd(ang)], [0, r*sind(ang)], '--'); 
+plot (real(point_to_pass_through), imag(point_to_pass_through), 'ro'); hold off
+title('Root Locus without Compensator');
 
 function output = point_on_rl(point, trans_func)
     tol = 1; % tolerance in degrees
