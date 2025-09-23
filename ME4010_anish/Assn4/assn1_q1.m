@@ -1,19 +1,11 @@
 clc; clear; close all;
 G = zpk([-5], [-2, -4, -7, -9],[1]);
-
-rlocus(G); hold on
 zeta = 0.7;
-
 ang = acosd(zeta);
 ang = 180 - ang; 
-
 r = 40;
 
-plot([0, r*cosd(ang)], [0, r*sind(ang)], '--'); hold off
-
-
 alpha = zeta / sqrt(1 - zeta^2);
-
 
 for omega = 1:0.01:100
     sigma = -alpha*omega;
@@ -27,14 +19,13 @@ for omega = 1:0.01:100
     end
 end
 
-
 %settling time = 4/(zeta*wn) = 1
 wn = 4/(zeta*1);
 wd = wn*sqrt(1-zeta^2);
 point_to_pass_through = -zeta*wn + 1i*wd; % casecade comp rl must pass through this point
 %add a zero on the real axis to move the root locus through this point
 
-for comp_pole = -10:0.01:0
+for comp_pole = -40:0.01:0
     comp_zero = -4.5; % keep the zero to the right of the pole by 4.5 units
     cascade_comp = zpk(comp_zero, comp_pole, 1);
     G_c = series(G, cascade_comp);
@@ -49,7 +40,7 @@ end
 cascade_comp = zpk(comp_zero, final_comp_pole, 1);
 G_c = series(G, cascade_comp);
 
-figure(1);
+figure(2);
 step(G); hold on
 step(G_c); hold off
 figure(3);
@@ -63,6 +54,75 @@ plot([0, r*cosd(ang)], [0, r*sind(ang)], '--');
 plot (real(point_to_pass_through), imag(point_to_pass_through), 'ro'); hold off
 title('Root Locus without Compensator');
 
+%peak time has to be half- and OS has to be 0.7 of of before- by adding a zero to G
+
+old_peak_time = pi/wd;
+new_peak_time = old_peak_time/2;
+old_OS = exp((-zeta*pi)/sqrt(1-zeta^2));
+new_OS = 0.7*old_OS;
+
+%peak time = f(wn, zeta)
+%   = (pi/(wn*sqrt(1-zeta^2)))
+
+%OS = f(zeta) 
+%   = exp((-zeta*pi)/sqrt(1-zeta^2))
+
+%so if we want a new OS, we MUST alter zeta
+
+%=> we can find new zeta from new OS
+new_zeta = -log(new_OS)/sqrt(pi^2 + (log(new_OS))^2);
+%=> wn is independent of zeta, 
+new_wd = pi/new_peak_time;
+new_wn = new_wd/sqrt(1-new_zeta^2);
+
+%desired new point is - zeta*wn + j*wd
+
+%new rl must pass through - 
+new_operating_point = -new_zeta*new_wn + 1i*new_wd;
+
+for added_zero = -100:0.01:50
+    G_dash = series(G, zpk(added_zero, [], 1));
+    if point_on_rl(new_operating_point, G_dash)
+        fprintf("The added zero is at: %.2f\n", added_zero);
+        final_added_zero = added_zero;
+        break;
+    end
+end
+% wd_new = pi/new_peak_time;
+% wn_new = wd_new/sqrt(1-zeta^2);
+
+fprintf("The peak time is: %.2f seconds\n", old_peak_time);
+fprintf("The new peak time is: %.2f seconds\n", new_peak_time);
+fprintf("The overshoot is: %.2f %%\n", old_OS*100);
+fprintf("The new overshoot is: %.2f %%\n", new_OS*100);
+fprintf("The new damping ratio is: %.2f\n", new_zeta);
+
+G_dash = series(G, zpk(final_added_zero, [], 1));
+
+fprintf("The added zero is at: %.2f\n", final_added_zero);
+
+figure(5);
+rlocus(G_dash); hold on
+plot(real(new_operating_point), imag(new_operating_point), 'ro'); hold off
+title('Root Locus with Added Zero');
+
+figure(6);
+step(G); hold on
+step(G_dash); hold off
+title('Step Response Comparison');
+legend('Original G', 'G with Added Zero');
+
+
+function angdeficit = angle_deficit(point, trans_func)
+    poles = point - pole(trans_func);
+    pole_ang_sum = sum(rad2deg(angle(poles)));
+    zeros = point - zero(trans_func);
+    zero_ang_sum = sum(rad2deg(angle(zeros)));
+    theta_net = zero_ang_sum - pole_ang_sum;
+    angdeficit = 180 - mod(theta_net, 360); 
+end
+
+
 function output = point_on_rl(point, trans_func)
     tol = 1; % tolerance in degrees
     
@@ -71,11 +131,9 @@ function output = point_on_rl(point, trans_func)
     zeros = point - zero(trans_func);
     zero_ang_sum = sum(rad2deg(angle(zeros)));
     total = pole_ang_sum - zero_ang_sum;
-    
-    % Wrap into [-180, 180]
+
     total = mod(total + 180, 360) - 180;
-    
-    % Check if angle is close to ±180
+
     if abs(abs(total) - 180) < tol
         output = true;
     else
