@@ -28,12 +28,15 @@ for omega = 1:0.01:100
 end
 
 
-
 %settling time = 4/(zeta*wn) = 1
 wn = 4/(zeta*1);
 wd = wn*sqrt(1-zeta^2);
-pole = -zeta*wn + 1i*wd;
-cascade_comp = zpk(4.5, [pole, conj(pole)], 1);
+point_to_pass_through = -zeta*wn + 1i*wd; % casecade comp rl must pass through this point
+%add a zero on the real axis to move the root locus through this point
+
+comp_zero = 4.5; %default value 4.5
+cascade_comp = zpk(comp_zero,... %{Find a way to pass through the point%}
+    [], 1);
 G_c = series(G, cascade_comp);
 
 figure(1);
