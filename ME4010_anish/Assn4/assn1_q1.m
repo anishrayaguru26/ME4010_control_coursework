@@ -42,7 +42,8 @@ G_c = series(G, cascade_comp);
 
 figure(2);
 step(G); hold on
-step(G_c); hold off
+z = feedback(88*G, 1);
+step(z); hold off
 figure(3);
 rlocus(G_c); hold on
 plot([0, r*cosd(ang)], [0, r*sind(ang)], '--'); 
