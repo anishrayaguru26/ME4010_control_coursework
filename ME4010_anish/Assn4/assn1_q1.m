@@ -40,21 +40,33 @@ end
 cascade_comp = zpk(comp_zero, final_comp_pole, 1);
 G_c = series(G, cascade_comp);
 
+figure(1);
+title('Step response for zeta = 0.7');
+z = feedback(series(G, gain), 1);
+step(z); 
+
 figure(2);
-step(G); hold on
-z = feedback(88*G, 1);
-step(z); hold off
-figure(3);
-rlocus(G_c); hold on
-plot([0, r*cosd(ang)], [0, r*sind(ang)], '--'); 
-plot (real(point_to_pass_through), imag(point_to_pass_through), 'ro'); hold off
-title('Root Locus with Compensator');
-figure(4);
 rlocus(G); hold on
 plot([0, r*cosd(ang)], [0, r*sind(ang)], '--'); 
 plot (real(point_to_pass_through), imag(point_to_pass_through), 'ro'); hold off
 title('Root Locus without Compensator');
 
+figure(3);
+rlocus(G_c); hold on
+plot([0, r*cosd(ang)], [0, r*sind(ang)], '--');
+plot (real(point_to_pass_through), imag(point_to_pass_through), 'ro'); hold off
+title('Root Locus with Compensator');
+
+figure(4);
+z2 = feedback(series(G, gain), 1);
+z1 = feedback(series(G_c, gain), 1);
+step(z2); hold on
+step(z1); hold off
+title('Step response with and without Compensator');
+legend('Original G', 'G with Compensator');
+
+
+%% question 2
 %peak time has to be half- and OS has to be 0.7 of of before- by adding a zero to G
 
 old_peak_time = pi/wd;
@@ -98,7 +110,7 @@ fprintf("The overshoot is: %.2f %%\n", old_OS*100);
 fprintf("The new overshoot is: %.2f %%\n", new_OS*100);
 fprintf("The new damping ratio is: %.2f\n", new_zeta);
 
-G_dash = series(G, zpk(final_added_zero, [], 1));
+%G_dash = series(G, zpk(final_added_zero, [], 1));
 
 fprintf("The added zero is at: %.2f\n", final_added_zero);
 
@@ -107,9 +119,13 @@ rlocus(G_dash); hold on
 plot(real(new_operating_point), imag(new_operating_point), 'ro'); hold off
 title('Root Locus with Added Zero');
 
+gain2 = evaluate_k(G_dash, new_operating_point);
+
+
 figure(6);
-step(G); hold on
-step(G_dash); hold off
+step(feedback(series(G, gain), 1)); hold on
+z3 = series(G_dash, gain2);
+step(feedback(z3, 1)); hold off
 title('Step Response Comparison');
 legend('Original G', 'G with Added Zero');
 

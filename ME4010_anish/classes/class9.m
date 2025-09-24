@@ -11,8 +11,6 @@ b = 10;
 t_span = 0:0.01:30;
 x0 = [0; 0; pi/60; 0];
 
-k = 10;
-
 
 % A = [0 1 0 0;
 %  0 -b/M -m*g/M 0; 
@@ -32,15 +30,17 @@ B = [0;
      0;
     -1/(M*L)];
 
+
 K = place(A, B, [-2+2i, -2-2i, -3, -4]);
+
 [t,x] = ode45(@(t,x) inv_pen(A,B,x,-K*x), t_span, x0);
 
-[t_span,x_span] = ode45(@(t,x) CtP(t,x,0,M,m,L,g,b), t_span, x0);
+%[t_span,x_span] = ode45(@(t,x) CtP(t,x,0,M,m,L,g,b), t_span, x0);
 
-figure(1);
-plot(t_span,x_span(:,1)); hold on
-plot(t_span,x_span(:,3)); hold off
-legend('Cart position','Pendulum angle')
+% figure(1);
+% plot(t_span,x_span(:,1)); hold on
+% plot(t_span,x_span(:,3)); hold off
+% legend('Cart position','Pendulum angle')
 
 
 figure(2);
