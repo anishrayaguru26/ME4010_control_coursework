@@ -59,12 +59,14 @@ title('Root Locus with Compensator');
 
 figure(4);
 z2 = feedback(series(G, gain), 1);
-z1 = feedback(series(G_c, gain), 1);
+z1 = feedback(series(G_c, evaluate_k(G_c, point_to_pass_through)), 1);
 step(z2); hold on
 step(z1); hold off
 title('Step response with and without Compensator');
 legend('Original G', 'G with Compensator');
 
+
+%e part TBD
 
 %% question 2
 %peak time has to be half- and OS has to be 0.7 of of before- by adding a zero to G
@@ -116,6 +118,7 @@ fprintf("The added zero is at: %.2f\n", final_added_zero);
 
 figure(5);
 rlocus(G_dash); hold on
+plot([0, -100*cosd(acosd(new_zeta))], [0, 100*sind(acosd(new_zeta))], '--');
 plot(real(new_operating_point), imag(new_operating_point), 'ro'); hold off
 title('Root Locus with Added Zero');
 
