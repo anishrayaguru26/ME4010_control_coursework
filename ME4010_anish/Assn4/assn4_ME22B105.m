@@ -20,7 +20,7 @@ for omega = 1:0.01:100
         break;
     end
 end
-%% a b c
+%% part a b c
 figure(1);
 rlocus(G);
 title('a - Root Locus of G');
@@ -52,11 +52,11 @@ end
 cascade_comp = zpk(comp_zero, final_comp_pole, 1);
 G_c = series(G, cascade_comp);
 
-%% e - validity of second order approximationm
+%% part e - validity of second order approximationm
 
 %If we remove any non-second order terms and just retain the dominant poles, we get:
 
-G_approx = zpk([-4.5], [-2, -4, final_comp_pole], 1);
+G_approx = zpk([-4.5, -5], [-2, -4, final_comp_pole], 1);
 gain_approx = evaluate_k(G_approx, point_to_pass_through);
 figure(2);
 step(feedback(series(G, gain), 1)); hold on
@@ -113,12 +113,6 @@ new_peak_time = old_peak_time/2;
 old_OS = exp((-zeta*pi)/sqrt(1-zeta^2));
 new_OS = 0.7*old_OS;
 
-%peak time = f(wn, zeta)
-%   = (pi/(wn*sqrt(1-zeta^2)))
-
-%OS = f(zeta) 
-%   = exp((-zeta*pi)/sqrt(1-zeta^2))
-
 %so if we want a new OS, we MUST alter zeta
 
 %=> we can find new zeta from new OS
@@ -128,7 +122,6 @@ new_wd = pi/new_peak_time;
 new_wn = new_wd/sqrt(1-new_zeta^2);
 
 %desired new point is - zeta*wn + j*wd
-
 %new rl must pass through - 
 new_operating_point = -new_zeta*new_wn + 1i*new_wd;
 
@@ -140,16 +133,12 @@ for added_zero = -100:0.01:50
         break;
     end
 end
-% wd_new = pi/new_peak_time;
-% wn_new = wd_new/sqrt(1-zeta^2);
 
 fprintf("The peak time is: %.2f seconds\n", old_peak_time);
 fprintf("The new peak time is: %.2f seconds\n", new_peak_time);
 fprintf("The overshoot is: %.2f %%\n", old_OS*100);
 fprintf("The new overshoot is: %.2f %%\n", new_OS*100);
 fprintf("The new damping ratio is: %.2f\n", new_zeta);
-
-%G_dash = series(G, zpk(final_added_zero, [], 1));
 
 fprintf("The added zero is at: %.2f\n", final_added_zero);
 
@@ -161,14 +150,12 @@ title('Root Locus with Added Zero');
 
 gain2 = evaluate_k(G_dash, new_operating_point);
 
-
 figure(8);
 step(feedback(series(G, gain), 1)); hold on
 z3 = series(G_dash, gain2);
 step(feedback(z3, 1)); hold off
 title('Step Response Comparison');
 legend('Original G', 'G with Added Zero');
-
 
 function angdeficit = angle_deficit(point, trans_func)
     poles = point - pole(trans_func);
@@ -178,7 +165,6 @@ function angdeficit = angle_deficit(point, trans_func)
     theta_net = zero_ang_sum - pole_ang_sum;
     angdeficit = 180 - mod(theta_net, 360); 
 end
-
 
 function output = point_on_rl(point, trans_func)
     tol = 1; % tolerance in degrees
@@ -197,7 +183,6 @@ function output = point_on_rl(point, trans_func)
         output = false;
     end
 end
-
 
 function output = evaluate_k(trans_func, point)
     zeros = prod(abs(point - zero(trans_func)));
