@@ -1,5 +1,5 @@
 %24/09/2025
-
+clc; clear; close all;
 
 %LQR - linear quadratic regulator
 %regulator system? - i/p is a fixed value
@@ -20,21 +20,34 @@ B = [0;
      0;
     -1/(M*L)];
 
-
 x0 = [-4; 0; pi+deg2rad(10); 0]; %ICs of X- x and xdot
-Q = [1 0 0 0;1 1 0 0 ; 0 0 1 0; 0 0 0 1];
+Q = [1 0 0 0;0 1 0 0 ; 0 0 1 0; 0 0 0 1];
 
 R = 1;
 K = lqr(A,B,Q,R);
 
-eig(A-B*K);
+eig(A-B*K)
 t_sim = 0:.1:20.0;
 
+disp('solving');
+[t,x] =  ode45(@(t,x)CtP(x,M,m,L,g,b,-K*(x)),t_sim, x0);
+disp('rendering')
+figure(1);
+plot(t, x(:,1));
 
-[t,x] = ode45(@(t,x) CtP(t,x,-K*x, M, m, L, g, b), t_sim, x0);
 
+function dx = CtP (x,M,m,L,g,d,u)
 
+  Sx= sin(x(3));
+  Cx = cos(x(3));
+  D = m*L*L*(M+m*(1-Cx^2));
 
+  dx(1,1) = x(2);
+  dx(2,1) = (1/D)*(-m^2*L^2*g*Cx*Sx + m*L^2*(m*L*x(4)^2*Sx-d*x(2)))+m*L^2/D*u;
+  dx(3,1) = x(4);
+  dx(4,1) = (1/D)*((m+M)*m*g*L*Sx - m*L*Cx*(m*L*x(4)^2*Sx-d*x(2))) - m*L*Cx/D*u;
+
+end
 
 % function dx = CtP(t, x, u, M, m, L, g, b)
 %     %CtP - Cart to Pendulum dynamics
