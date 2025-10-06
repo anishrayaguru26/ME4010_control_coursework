@@ -1,4 +1,5 @@
 %1/10/25
+%Observer for spring mass damper system
 %% system variables - 
 clc; clear; close all;
 m = 10;
@@ -32,19 +33,25 @@ disp(rank(obsv(A,C)));
 [t, x] = ode45(@(t,x) smd2(x,A,B,u), t_span, x_0);
 
 y = transpose(C*x'); %causes error- why? x is all time, y is at an instant
+% is actual o/p
 %([1x2]*[mx2]')'
 
 %observer %y and x_t?
 x_0 = [-1; 0]; %initial guess of states
 [t_o, x_t] = ode45(@(t_o,x_t) obs(t_o,y,x_t,A,B,C,Ke,u,t), t_span, x_0);
 
+
+%x_t plotting
 plot(t,y); hold on
 plot(t_o,x_t(:,1)); hold off
 legend("o/p measurement y", "estimated displacement, x_t");
 
+
+%error plotting
 figure; hold on
 plot(t_o, y - x_t(:,1)); hold off% Convergence of error to 0
 
+% see x vs x_t displacement
 figure; hold on
 plot(t, x(:,2));
 plot(t_o, x_t(:,2));
