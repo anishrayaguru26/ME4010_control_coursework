@@ -18,7 +18,8 @@ eigenvals = eig(A);
 
 x_0 = [-2;0;]; %ICs
 
-p_o = [-2.4, -2.5];
+p_o = [-2.4, -2.5]; %2-5x eigenvalues of A -...
+%  forces error to settle, fig 4
 
 %transpose of controller gain matrix of the dual system
 Ke = place(A', C', p_o)';
@@ -37,29 +38,35 @@ y = transpose(C*x'); %causes error- why? x is all time, y is at an instant
 %([1x2]*[mx2]')'
 
 %observer %y and x_t?
-x_0 = [-1; 0]; %initial guess of states
+x_0 = [-10; 1]; %initial guess of states
 [t_o, x_t] = ode45(@(t_o,x_t) obs(t_o,y,x_t,A,B,C,Ke,u,t), t_span, x_0);
 
 
 %x_t plotting
+figure;
 plot(t,y); hold on
 plot(t_o,x_t(:,1)); hold off
 legend("o/p measurement y", "estimated displacement, x_t");
+title("x_t plotting")
 
 
 %error plotting
 figure; hold on
 plot(t_o, y - x_t(:,1)); hold off% Convergence of error to 0
+title("error plotting")
 
 % see x vs x_t displacement
 figure; hold on
 plot(t, x(:,2));
 plot(t_o, x_t(:,2));
+title("x vs x_t disp")
+legend("x","x_t")
 
 % see difference in velocity
 
 figure; hold on
 plot(t_o, x(:,2) - x_t(:,2)); % error development
+title("error development")
 
 %% Observer function
 
