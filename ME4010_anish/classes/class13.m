@@ -43,7 +43,6 @@ y = awgn(Y,snr); % Adding Gaussian noise -
 %snr - signal to noise ratio - 20 is good
 
 
-
 %observer %y and x_t?
 x_0 = [-10; 1]; %initial guess of states
 [t_o, x_t] = ode45(@(t_o,x_t) obs(t_o,y,x_t,A,B,C,Ke,u,t), t_span, x_0);
