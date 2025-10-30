@@ -1,4 +1,11 @@
-function dx = CtP (x,M,m,L,g,d,u)
+function dx = CtP (x,u)
+
+  dx = zeros(4,1);
+  m = 1; % mass of pendulum
+  M = 5; % mass of cart
+  L = 2; % length of pendulum
+  g = -9.81; % m/s^2
+  d = 1; % Ns/m
 
   Sx= sin(x(3));
   Cx = cos(x(3));
